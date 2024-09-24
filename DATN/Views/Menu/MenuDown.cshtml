@@ -1,0 +1,27 @@
+﻿@model IEnumerable<ShopDGHouse.Models.Category>
+@if (Model != null && Model.Any())
+{
+    <section class="product spad">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 col-md-4">
+                    <div class="section-title">
+                        <h4>New product</h4>
+                    </div>
+                </div>
+                <div class="col-lg-8 col-md-8">
+                    <ul class="filter__controls">
+                        <li class="active" data-filter="*">All</li>
+                        @foreach (var item in Model)
+                        {
+                            <li data-filter=".@item.CategoryName.Trim()">@item.CategoryName.Trim()</li>
+                        }
+                    </ul>
+                </div>
+            </div>
+            <div class="row property__gallery">
+                @Html.Action("Partial_Menu", "Products")
+            </div>
+        </div>
+    </section>
+}

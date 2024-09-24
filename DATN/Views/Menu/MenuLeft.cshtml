@@ -1,0 +1,17 @@
+﻿@model IEnumerable<ShopDGHouse.Models.Category>
+@if (Model != null && Model.Any())
+{
+    foreach (var item in Model)
+    {
+        <div class="categories__accordion">
+            <div class="accordion" id="accordionExample">
+                <div class="card">
+                    <div class="card-heading active">
+                        <a href="/danh-muc-san-pham/@item.Id">@item.CategoryName</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}
+

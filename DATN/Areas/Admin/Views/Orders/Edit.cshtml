@@ -1,0 +1,230 @@
+﻿@model ShopDGHouse.Models.Order
+@using ShopDGHouse.Models
+@{
+    ViewBag.Title = "Edit";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    DoAn db = new DoAn();
+    int stt = 1;
+    decimal? total = 0;
+    var orderDT = db.OrderDetails.Where(s => s.OrderId == Model.Id).ToList();
+}
+@section naviheader{
+    <ul class="navbar-nav">
+        <li class="nav-item">
+            <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+        </li>
+        <li class="nav-item d-none d-sm-inline-block">
+            <a href="/admin/home" class="nav-link">Home</a>
+        </li>
+        <li class="nav-item d-none d-sm-inline-block">
+            <a href="/admin/orders" class="nav-link">Orders</a>
+        </li>
+        <li class="nav-item d-none d-sm-inline-block">
+            <a href="#" class="nav-link">Cập nhật</a>
+        </li>
+    </ul>
+}
+<section class="content">
+
+    <!-- Default box -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Cập nhật Đơn hàng</h3>
+
+            <div class="card-tools">
+
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="bs-stepper-content">
+                <div class="row">
+                    <div class="col-md-4">
+                        @using (Html.BeginForm("Edit", "Orders", FormMethod.Post, new { }))
+                        {
+                            @Html.AntiForgeryToken()
+                            @Html.ValidationSummary(true)
+                            <!-- your steps content here -->
+                        <div id="logins-part" class="content active dstepper-block" role="tabpanel" aria-labelledby="logins-part-trigger">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.OrderDate, htmlAttributes: new { @class = "control-label col-md-10" })
+                                <div class="col-md-10">
+                                    <input name="OrderDate" id="OrderDate" value="@Html.DisplayFor(model => model.OrderDate)" class="form-control" readonly />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="exampleInputEmail1">Tên Khách Hàng</label>
+                                @Html.TextBoxFor(x => x.CustomerName, new { @class = "form-control", @placeholder = "Tên khách hàng", @type = "text" })
+                                @Html.ValidationMessageFor(x => x.CustomerName, null, new { @class = "text-danger" })
+                            </div>
+                            <div class="form-group">
+                                <label for="exampleInputEmail1">Email</label>
+                                @Html.TextBoxFor(x => x.Email, new { @class = "form-control", @placeholder = "Email", @type = "email" })
+                                @Html.ValidationMessageFor(x => x.Email, null, new { @class = "text-danger" })
+                            </div>
+                            <div class="form-group">
+                                <label for="exampleInputEmail1">Phone</label>
+                                @Html.TextBoxFor(x => x.Phone, new { @class = "form-control", @placeholder = "Phone", @type = "number" })
+                                @Html.ValidationMessageFor(x => x.Phone, null, new { @class = "text-danger" })
+                            </div>
+                            <div class="form-group">
+                                <label for="exampleInputEmail1">Địa chỉ</label>
+                                @Html.TextBoxFor(x => x.Address, new { @class = "form-control", @placeholder = "Địa chỉ", @type = "text" })
+                                @Html.ValidationMessageFor(x => x.Address, null, new { @class = "text-danger" })
+                            </div>
+
+                            <div class="form-group">
+                                <label for="exampleInputEmail1">Tài khoản</label>
+
+                                @Html.DropDownList("UserId", null, "Tài khoản", htmlAttributes: new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.UserId, "", new { @class = "text-danger" })
+                            </div>
+                            <div class="form-group">
+                                <label for="exampleInputEmail1">Hình thức thanh toán</label>
+                                @Html.DropDownList("PaymentId", null, htmlAttributes: new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.PaymentId, "", new { @class = "text-danger" })
+                            </div>
+                            <div class="form-group">
+                                <label for="exampleInputEmail1">Trạng thái</label>
+                                <div class="col-md-10">
+                                    <div class="checkbox">
+                                        @Html.EditorFor(model => model.Status)
+                                        @Html.ValidationMessageFor(model => model.Status, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <a href="/admin/orders" class="btn btn-danger">Quay lại</a>
+                                <button type="submit" class="btn btn-primary">Cập nhật</button>
+                            </div>
+                        </div>
+
+                        }
+                    </div>
+                    <div class="col-md-8">
+                        <h4>Đơn hàng</h4>
+                        <p>---Thêm sản phẩm cho chi tiết đơn hàng---</p>
+                        <hr />
+                        <table class="table table-bordered" width="100%">
+                            <thead>
+                                <tr>
+                                    <th>STT</th>
+                                    <th>
+                                        Sản phẩm
+                                    </th>
+                                    <th>
+                                        Số lượng
+                                    </th>
+                                    <th>
+                                        Thành tiền
+                                    </th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in orderDT)
+                                {
+                                    total += (decimal)item.Price;
+                                    <tr>
+                                        <td>@(stt++)</td>
+                                        <td>@*@Html.DisplayFor(model => item.Products.ProductName)*@
+                                        @item.Product.ProductName</td>
+                                        <td>
+                                            @*@Html.DisplayFor(model => item.Quantity)*@
+                                            @item.Quantity
+                                        </td>
+                                        <td>@String.Format("{0:C}", item.Price)</td>
+                                        <td style="width:70px;">
+                                            <a href="#" title="Cập nhật" data-toggle="modal" data-target="#editOD-@item.Id"><i class="far fa-edit"></i></a>|
+                                            <a href="#" title="Xoá" data-toggle="modal" data-target="#deleteOD-@item.Id"><i class="far fa-trash-alt"></i></a>
+                                        </td>
+                                    </tr>
+                                    <div class="modal fade" id="editOD-@item.Id" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" style="top:200px;">
+                                        <div class="modal-dialog" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="exampleModalLabel">Cập nhật số lượng?</h5>
+                                                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                                        <span aria-hidden="true">×</span>
+                                                    </button>
+                                                </div>
+                                                @using (Html.BeginForm("EditOD", "Orders", new { orderId = Model.Id, id = item.Id }))
+                                                {
+                                                    <div class="modal-body">
+                                                        <label>@item.Product.ProductName</label>
+                                                        <br />
+                                                        <label>Số lượng</label>
+                                                        <input name="quantity" type="number" min="1" max="100" id="quantity" value="@item.Quantity" />
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button class="btn btn-secondary" type="button" data-dismiss="modal">Huỷ</button>
+                                                        <button class="btn btn-success" type="submit">Cập nhật</button>
+                                                    </div>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal fade" id="deleteOD-@item.Id" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" style="top:200px;">
+                                        <div class="modal-dialog" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="exampleModalLabel">Bạn có chắc muốn xoá?</h5>
+                                                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                                        <span aria-hidden="true">×</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">Chọn "Xoá" để xoá</div>
+                                                <div class="modal-footer">
+                                                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Huỷ</button>
+                                                    <a class="btn btn-danger" href="@Url.Action("DeleteOD","Orders", new { id = item.Id, orderId = Model.Id })">Xoá</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+
+                            </tbody>
+                            <tfoot style="background-color:wheat;">
+                                <tr>
+                                    @using (Html.BeginForm("AddOD", "Orders", new { orderId = Model.Id }))
+                                    {
+                                        <th></th>
+                                        <th>
+                                            @Html.DropDownList("productId", null, "Sản phẩm", new { @class = "form-control" })
+                                        </th>
+                                        <th>
+                                            <input name="quantity" id="quantity" placeholder="số lượng" class="form-control" type="number" min="1" max="100" required />
+                                        </th>
+                                        <th></th>
+                                        <th><button type="submit" class="btn-primary"><i class="fas fa-plus-circle fa-2x"></i></button></th>
+                                    }
+
+                                </tr>
+                                <tr>
+                                    <th></th>
+                                    <th></th>
+                                    <th class="text-right">Tổng Tiền</th>
+                                    <th>@String.Format("{0:C}", total)</th>
+                                    <th></th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        @if(ViewBag.Loi != null)
+            {
+                <div class="alert alert-danger" style="font-size:20px;">@ViewBag.Loi</div>
+            }
+        <!-- /.card-body -->
+        <div class="card-footer">
+
+        </div>
+        <!-- /.card-footer-->
+    </div>
+    <!-- /.card -->
+</section>
+
+
+

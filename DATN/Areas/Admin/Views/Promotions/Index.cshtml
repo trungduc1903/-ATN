@@ -1,0 +1,192 @@
+﻿@model PagedList.PagedList<ShopDGHouse.Models.Promotion>
+@using PagedList;
+@using PagedList.Mvc;
+@using ShopDGHouse.Models;
+@{
+    ViewBag.Title = "Quản lí Brands";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    DoAn db = new DoAn();
+    string prName = "";
+    string brName = "";
+}
+
+
+@section naviheader{
+    <ul class="navbar-nav">
+        <li class="nav-item">
+            <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+        </li>
+        <li class="nav-item d-none d-sm-inline-block">
+            <a href="/admin/home" class="nav-link">Home</a>
+        </li>
+        <li class="nav-item d-none d-sm-inline-block">
+            <a href="/admin/promotions" class="nav-link">Promotions</a>
+        </li>
+    </ul>
+}
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Quản lý Khuyến mại</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="#">Home</a></li>
+                    <li class="breadcrumb-item active">Promotions</li>
+                </ol>
+            </div>
+        </div>
+    </div><!-- /.container-fluid -->
+</section>
+
+<!-- Main content -->
+<section class="content">
+
+    <!-- Default box -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Danh sách Khuyến mại</h3>
+
+            <div class="card-tools">
+                <a href="/admin/promotions/add" class="btn btn-primary">Thêm mới</a>
+                @*<a href="#" class="btn btn-danger" id="BtnDeleteAll">XóaALL</a>*@
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-6">
+                    @using (Html.BeginForm("Index", "Promotions", FormMethod.Get, new { }))
+                    {
+                        <div class="input-group input-group-sm">
+                            @Html.TextBox("Searchtext"@*new {@class="form-control"}*@)
+                            <span class="input-group-append">
+                                <button type="submit" class="btn btn-info btn-flat">Tim kiếm</button>
+                            </span>
+                        </div>
+                    }
+                </div>
+            </div>
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        @*<th><input type="checkbox" id="SelectAll" /></th>*@
+                        <th>STT</th>
+                        <th>NamePr</th>
+                        <th>Từ ngày</th>
+                        <th>Đến ngày</th>
+                        <th>ApplyForAll</th>
+                        <th>Khuyến mãi(%)</th>
+                        <th>Khuyến mãi($)</th>
+                        <th>Tên Product</th>
+                        <th>Tên Brand</th>
+                        <th>Trạng thái</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        var i = ((ViewBag.Page - 1) * ViewBag.PageSize) + 1;
+                        foreach (var item in Model)
+                        {
+                            <tr id="trow_@item.Id">
+                                @*<td><input type="checkbox" class="cbkItem" value="@item.MaKM" /></td>*@
+                                <td>@i</td>
+                                <td>@item.ProName</td>
+                                <td>@Html.DisplayFor(s =>item.FromDate)</td>
+                                <td>@Html.DisplayFor(s =>item.ToDate)</td>
+                                @if(item.ApplyForAll==true)
+                    {
+                        <td>Áp dụng</td>
+                                }
+                                else
+                    {
+                            <td>Không</td>
+                    }
+                                <td>@item.DiscountPercent</td>
+                                <td>@item.DiscountAmount</td>
+                                <td>@foreach (var pr in db.Products)
+                                {
+                                    if(pr.Id==item.ProductId)
+                                    {
+                                        prName = pr.ProductName;
+                                    }
+                                }@prName</td>
+                                <td>
+                                    @foreach (var br in db.Brands)
+                                    {
+                                        if (br.Id == item.BrandId)
+                                        {
+                                            brName = br.NameBrands;
+                                        }
+                                    }@brName
+                                </td>
+                                @if (item.Active == true)
+                                {
+                                    <td>
+                                        Kích hoạt
+                                    </td>
+                                }
+                                else
+                                {
+                                    <td>
+                                        Tắt
+                                    </td>
+                                }
+                                <td>
+                                    <a href="/admin/promotions/edit/@item.Id" class="btn btn-sm btn-warning">Sửa</a>
+                                    <a href="" data-id="@item.Id" class="btn btn-sm btn-danger btnDelete">Xóa</a>
+                                </td>
+                            </tr>
+                            i++;
+
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="4">Khong co ban ghi nao</td>
+                        </tr>
+
+                    }
+                </tbody>
+            </table>
+            @Html.PagedListPager(Model, page => Url.Action("Index", new { page }))
+        </div>
+        <!-- /.card-body -->
+        <div class="card-footer">
+
+        </div>
+        <!-- /.card-footer-->
+    </div>
+    <!-- /.card -->
+
+</section>
+<!-- /.content -->
+@section scripts
+{
+    <script>
+        $(document).ready(function () {
+            $('body').on('click', '.btnDelete', function () {
+                var id = $(this).data("id");
+                var conf = confirm('Bạn có muốn xóa bản ghi này không?');
+                if (conf === true) {
+                    $.ajax({
+                        url: '/admin/promotions/delete',
+                        type: 'POST',
+                        data: { id: id },
+                        success: function (rs) {
+                            if (rs.success) {
+                                $('#trow_' + id).remove();
+                            }
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+}
+
+
+

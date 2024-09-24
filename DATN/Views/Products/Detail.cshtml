@@ -1,0 +1,246 @@
+﻿@model ShopDGHouse.Models.Product
+@using ShopDGHouse.Models
+@{
+    ViewBag.Title = "Detail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    DoAn db = new DoAn();
+    var ListImage = db.ProductImages.Where(s => s.ProductId == Model.Id).Select(s => s).ToList();
+    var ListCMt = db.Comments.Where(s => s.ProductId == Model.Id).Select(s => s).ToList();
+    List<Comment> comments = db.Comments.Where(s => s.ProductId == Model.Id).ToList();
+    var checkkm = from km in db.Promotions where (km.Active == true && km.FromDate <= DateTime.Now && km.ToDate >= DateTime.Now) select km;
+    var result = from obj in db.Products
+                 from km in checkkm.ToList()
+                 where obj.Id == km.ProductId || obj.BrandId == km.BrandId || km.ApplyForAll == true
+                 orderby obj.ProductName
+                 select obj;
+    var kmResult = db.Promotions.ToList();
+    Boolean checkQuyen(int code)
+    {
+        Boolean check = false;
+        foreach (var abc in result.ToList())
+        {
+            if (abc.Id == code)
+            {
+                check = true;
+            }
+        }
+        return check;
+    }
+}
+@if (Model != null)
+{
+    <!-- Breadcrumb Begin -->
+    <div class="breadcrumb-option">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="breadcrumb__links">
+                        <a href="/home"><i class="fa fa-home"></i> Home</a>
+                        <a href="/danh-muc-san-pham/@Model.Category.Id">@Model.Category.CategoryName</a>
+                        <span>@Model.ProductName</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Breadcrumb End -->
+    <!-- Product Details Section Begin -->
+    <section class="product-details spad">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="product__details__pic">
+                        <div class="product__details__pic__left product__thumb nice-scroll">
+                            @foreach (var item in ListImage)
+                            {
+                                string ImagePath = "~/wwwroot/ImageProducts/" + item.ImagePath;
+                                if (item.IsDefault == true)
+                                {
+                                    <a class="pt active" href="#product-1">
+                                        <img src="@Url.Content(ImagePath)" alt="">
+                                    </a>
+                                }
+                                if (item.IsDefault == false)
+                                {
+                                    <a class="pt active" href="#product-2">
+                                        <img src="@Url.Content(ImagePath)" alt="">
+                                    </a>
+                                }
+                            }
+                        </div>
+                        <div class="product__details__slider__content">
+                            <div class="product__details__pic__slider owl-carousel">
+                                @foreach (var items in ListImage)
+                                {
+                                    string ImagePath = "~/wwwroot/ImageProducts/" + items.ImagePath;
+                                    if (items.IsDefault == true)
+                                    {
+                                        <img data-hash="product-1" class="product__big__img" src="@Url.Content(ImagePath)" alt="">
+                                    }
+                                    if (items.IsDefault == false)
+                                    {
+                                        <img data-hash="product-2" class="product__big__img" src="@Url.Content(ImagePath)" alt="">
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="product__details__text">
+                        <h3>@Model.ProductName<span>Brand: @Model.Brand.NameBrands</span></h3>
+                        <div class="rating">
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star"></i>
+                            <span></span>
+                        </div>
+                        @if (checkQuyen(Model.Id) == false)
+                        {
+                            <div class="product__details__price">$@Model.Price</div>
+                        }
+                        @foreach (var km in kmResult)
+                        {
+                            decimal? giakm = 0;
+                            if (km.ApplyForAll == true && km.Active == true)
+                            {
+                                if (km.DiscountPercent != null)
+                                {
+                                    giakm = Model.Price - (decimal)Model.Price * (decimal)km.DiscountPercent / 100;
+                                    <div class="product__details__price"><del>$@Model.Price</del><sup style="color:red;font-style:italic;text-shadow:4px 4px 8px blue;">(@km.DiscountPercent%)</sup></div>
+                                    <div class="product__details__price" style="color:red">@String.Format("{0:C}", giakm)</div>
+                                }
+                                else if (km.DiscountAmount != null)
+                                {
+                                    giakm = Model.Price - (decimal)km.DiscountAmount;
+                                    <div class="product__details__price"><del>$@Model.Price</del><sup style="color:red;font-style:italic;text-shadow:4px 4px 8px blue;">(- @String.Format("{0:C}", km.DiscountAmount))</sup></div>
+                                    <div class="product__details__price" style="color:red">@String.Format("{0:C}", giakm)</div>
+                                }
+
+                            }
+                            else if (km.ProductId == Model.Id || km.BrandId == Model.BrandId && km.Active == true)
+                            {
+                                if (km.DiscountPercent != null)
+                                {
+                                    giakm = Model.Price - (decimal)Model.Price * (decimal)km.DiscountPercent / 100;
+                                    <div class="product__details__price"><del>$@Model.Price</del><sup style="color:red;font-style:italic;text-shadow:4px 4px 8px blue;">(@km.DiscountPercent%)</sup></div>
+                                    <div class="product__details__price" style="color:red">@String.Format("{0:C}", giakm)</div>
+                                }
+                                else if (km.DiscountAmount != null)
+                                {
+                                    giakm = Model.Price - (decimal)km.DiscountAmount;
+                                    <div class="product__details__price"><del>$@Model.Price</del><sup style="color:red;font-style:italic;text-shadow:4px 4px 8px blue;">(- @String.Format("{0:C}", km.DiscountAmount))</sup></div>
+                                    <div class="product__details__price" style="color:red">@String.Format("{0:C}", giakm)</div>
+                                }
+                            }
+
+                        }
+                        <div class="product__details__button">
+                            <div class="quantity">
+                                <span>Quantity:</span>
+                                <div class="pro-qty">
+                                    <input type="text" id="quantity_value" value="1">
+                                </div>
+                            </div>
+                            @if (Model.Quantity > 0)
+                            {
+                                <a href="#" class="cart-btn" data-id="@Model.Id"><span class="icon_bag_alt"></span> Add to cart</a>
+                            }
+                            else
+                            {
+                                <h4 class="cart-btn">HẾT HÀNG</h4>
+                            }
+                        </div>
+                        <div class="product__details__widget">
+                            <ul>
+                                <li>
+                                    <span>TGPH:</span>
+                                    <p>@Html.DisplayFor(s => Model.TGPH)</p>
+                                </li>
+                                <li>
+                                    <span>Origin:</span>
+                                    <p>@Model.Origin</p>
+                                </li>
+                                <li>
+                                    <span>Promotions:</span>
+                                    <p>Free shipping</p>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-12">
+                    <div class="product__details__tab">
+                        <ul class="nav nav-tabs" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" data-toggle="tab" href="#tabs-1" role="tab">Description</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-toggle="tab" href="#tabs-3" role="tab">
+                                    Reviews (@ListCMt.Count())
+                                </a>
+                            </li>
+                        </ul>
+                        <div class="tab-content">
+                            <div class="tab-pane active" id="tabs-1" role="tabpanel">
+                                <h6>Description</h6>
+                                <p>
+                                    @Html.Raw(Model.Describe)
+                                </p>
+                            </div>
+                            <div class="tab-pane" id="tabs-3" role="tabpanel">
+                                <h6>
+                                    Reviews (@ListCMt.Count())
+                                </h6>
+                                <div style="background-color:beige">
+                                    @foreach (var cmt in comments)
+                                    {
+
+                                        <hr />
+                                        <h5>@Html.DisplayFor(model => cmt.User.Fullname)</h5>
+                                        <h5>
+                                            @Html.DisplayFor(model => cmt.Title) &nbsp;
+                                            <small>@Html.DisplayFor(model => cmt.CreateDate)</small>
+                                        </h5>
+                                        <p style="font-weight:bold">@Html.DisplayFor(model => cmt.Content)</p>
+                                        <hr style="background-color:black"/>
+                                    }
+                                </div>
+                                <div class="col-lg-12">
+                                    <h3 class="text-center" style="margin-bottom:50px;">Nhận xét</h3>
+                                    @using (Html.BeginForm("AddComments", "Home", FormMethod.Post))
+                                    {
+                                        <div class="form-group">
+                                            <label class="control-label col-md-2" for="tieude">Tiêu đề</label>
+                                            <div class="col-md-12">
+                                                <input class="form-control the-nhap text-box single-line" id="Title" name="Title" type="text" value="">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label col-md-2" for="noidung">Nội dung</label>
+                                            <div class="col-md-12">
+                                                <textarea rows="9" class="form-control text-box single-line" id="Content" placeholder="Viết bình luận của bạn" name="Content" type="text" value="" required></textarea>
+                                            </div>
+                                        </div>
+                                        <input id="productId" name="productId" value="@Model.Id" style="display:none" />
+                                        <button type="submit" class="btn btn-primary offset-5" style="margin-top:20px; margin-bottom:20px;">Gửi bình luận</button>
+                                    }
+                                    @if (ViewBag.error != null)
+                                    {
+                                        <hr />
+                                        <div class="alert alert-danger text-center">@ViewBag.error</div>
+                                        <a class="btn btn-info" href="@Url.Action("Login","Account")"><i class="fas fa-hand-point-right"></i>&nbsp; Đăng nhập <i class="fas fa-sign-in-alt"></i></a>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Product Details Section End -->
+}
+

@@ -1,0 +1,191 @@
+﻿@model ShopDGHouse.Models.Product
+@{
+    ViewBag.Title = "Add";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+@section naviheader{
+    <ul class="navbar-nav">
+        <li class="nav-item">
+            <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+        </li>
+        <li class="nav-item d-none d-sm-inline-block">
+            <a href="/admin/home" class="nav-link">Home</a>
+        </li>
+        <li class="nav-item d-none d-sm-inline-block">
+            <a href="/admin/products" class="nav-link">Products</a>
+        </li>
+        <li class="nav-item d-none d-sm-inline-block">
+            <a href="#" class="nav-link">Thêm mới</a>
+        </li>
+    </ul>
+}
+
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Thêm mới Products</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="/admin/products">Products</a></li>
+                    <li class="breadcrumb-item active">Thêm mới</li>
+                </ol>
+            </div>
+        </div>
+    </div><!-- /.container-fluid -->
+</section>
+<!-- Main content -->
+<section class="content">
+
+    <!-- Default box -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Thông tin thêm mới Products</h3>
+
+        </div>
+        <div class="card-body">
+            <div class="bs-stepper-content">
+   
+                    <!-- your steps content here -->
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    @using (Html.BeginForm("Add", "Products", FormMethod.Post, new { }))
+                                    {
+                                        @Html.AntiForgeryToken()
+                                        @Html.ValidationSummary(true)
+                                        <div class="tab-content">
+                                            <div class="tab-pane active" id="activity">
+                                                <div class="form-group">
+                                                    <label for="exampleInputEmail1">Tên sản phẩm</label>
+                                                    @Html.TextBoxFor(x => x.ProductName, new { @class = "form-control", @placeholder = "Tên sản phẩm" })
+                                                    @Html.ValidationMessageFor(x => x.ProductName, null, new { @class = "text-danger" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="exampleInputEmail1">Giá</label>
+                                                    @Html.TextBoxFor(x => x.Price, new { @class = "form-control", @placeholder = "Giá", @type = "number" })
+                                                    @Html.ValidationMessageFor(x => x.Price, null, new { @class = "text-danger" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="exampleInputEmail1">Số lượng</label>
+                                                    @Html.TextBoxFor(x => x.Quantity, new { @class = "form-control", @placeholder = "Số lượng", @type = "number" })
+                                                    @Html.ValidationMessageFor(x => x.Quantity, null, new { @class = "text-danger" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="exampleInputEmail1">Danh mục sản phẩm</label>
+                                                    @Html.DropDownListFor(x => x.CategoryId, ViewBag.CategoryId as SelectList, "-Chọn danh mục sản phẩm-", new { @class = "form-control" })
+                                                    @Html.ValidationMessageFor(x => x.Category.CategoryName, null, new { @class = "text-danger" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="exampleInputEmail1">Chọn Thương Hiệu</label>
+                                                    @Html.DropDownListFor(x => x.BrandId, ViewBag.BrandId as SelectList, "-Chọn thương hiệu-", new { @class = "form-control" })
+                                                    @Html.ValidationMessageFor(x => x.Brand.NameBrands, null, new { @class = "text-danger" })
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label for="exampleInputPassword1">Mô tả</label>
+                                                    @Html.TextAreaFor(x => x.Describe, new
+        {
+            @class = "form-control"})
+             @Html.ValidationMessageFor(model => model.Describe, "", new { @class = "text-danger" })
+                                                    @*@Html.EditorFor(model => model.Describe, new { htmlAttributes = new { @class = "form-control" } })
+                                                    @Html.ValidationMessageFor(model => model.Describe, "", new { @class = "text-danger" })*@
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label for="exampleInputEmail1">Xuất xứ</label>
+                                                    @Html.TextBoxFor(x => x.Origin, new { @class = "form-control", @placeholder = "Xuất xứ", @type = "text" })
+                                                    @Html.ValidationMessageFor(x => x.Origin, null, new { @class = "text-danger" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="exampleInputEmail1">Ngày phát hành</label>
+                                                    @Html.TextBoxFor(x => x.TGPH, "{0:yyyy-MM-dd HH:mm}", new { @class = "form-control", @placeholder = "Thời gian phát hành", @type = "datetime-local" })
+                                                    @Html.ValidationMessageFor(x => x.TGPH, null, new { @class = "text-danger" })
+                                                </div>
+                                            </div>
+                                            <!-- /.tab-pane -->
+                                        </div>
+                                        <button type="submit" class="btn btn btn-success">Thêm</button>
+                                        <a href="/admin/products" class="btn btn btn-danger">Quay lại</a>
+                                    }
+                                </div>
+                                <div class="col-md-8">
+                                    <h4>Ảnh sản phẩm</h4>
+                                    <p>---Điền thông tin sản phẩm và tạo mới để thêm ảnh sản phẩm---</p>
+                                    <hr />
+                                    <table class="table table-bordered" width="100%">
+                                        <thead>
+                                            <tr>
+                                                <th>STT</th>
+                                                <th>
+                                                    Ảnh
+                                                </th>
+                                                <th>
+                                                    Mặc định
+                                                </th>
+                                                <th>
+                                                    Ngày tạo
+                                                </th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                            </tr>
+                                        </tbody>
+                                        <tfoot style="background-color:aquamarine">
+                                            <tr>
+                                                <th></th>
+                                                <th>
+                                                    <input placeholder="chọn file ảnh" type="file" readonly disabled />
+                                                </th>
+                                                <th>
+                                                    <input placeholder="mặc định" readonly type="checkbox" />
+                                                </th>
+                                                <th></th>
+                                                <th><a href="#"><i class="fas fa-plus-circle fa-2x"></i></a></th>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            </div>
+                            <!-- /.tab-content -->
+                        </div><!-- /.card-body -->
+                
+            </div>
+        </div>
+        <!-- /.card-body -->
+        <div class="card-footer">
+        </div>
+        <!-- /.card-footer-->
+    </div>
+    <!-- /.card -->
+
+</section>
+@section scripts{
+    <script>
+        $(document).ready(function () {
+            CKEDITOR.replace('txtDetail', {
+                customConfig: '/Content/ckeditor/config.js',
+                extraAllowedContent: 'span',
+            });
+        });
+        function BrowseServer(field) {
+            var finder = new CKFinder();
+            finder.selectActionFunction = function (fileUrl) {
+                document.getElementById(field).value = fileUrl;
+            };
+            finder.popup();
+        }
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}
+
+
+

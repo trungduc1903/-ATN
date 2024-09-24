@@ -1,0 +1,34 @@
+﻿@model IEnumerable<ShopDGHouse.Models.Category>
+@using ShopDGHouse.Models
+@if (Model != null && Model.Any())
+{
+    <ul class="active">
+        <li @*class="active"*@><a href="/home">Trang chủ</a></li>
+        @*<li><a href="#">Women’s</a></li>
+            <li><a href="#">Men’s</a></li>*@
+        <li><a href="/products">Sản Phẩm</a></li>
+        <li>
+            <a href="#">Danh mục</a>
+            <ul class="dropdown">
+                @foreach (var item in Model)
+                {
+                    <li><a href="/danh-muc-san-pham/@item.Id">@item.CategoryName</a></li>
+                }
+            </ul>
+        </li>
+        <li>
+            <a href="/brands">Thương hiệu</a>
+            @*<a href="#">Thương Hiệu</a>
+            <ul class="dropdown">
+                @{
+                
+                    foreach (var brr in br)
+                    {
+                        <li><a href="#">@brr.NameBrands</a></li>
+                    }
+                 }
+            </ul>*@
+        </li>
+        <li><a href="/contacts">Liên Hệ</a></li>
+    </ul>
+}

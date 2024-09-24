@@ -1,0 +1,212 @@
+﻿@*@model IEnumerable<ShopDGHouse.Models.Product>*@
+@*@model PagedList.IPagedList<IEnumerable<ShopDGHouse.Models.Product>>*@
+@model PagedList.IPagedList<ShopDGHouse.Models.Product>
+@using ShopDGHouse.Models
+@using PagedList
+@using PagedList.Mvc
+@{
+    ViewBag.Title = "Danh sách sản phẩm";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    DoAn db = new DoAn();
+    var checkkm = from km in db.Promotions where (km.Active == true && km.FromDate <= DateTime.Now && km.ToDate >= DateTime.Now) select km;
+    var result = from obj in Model
+                 from km in checkkm.ToList()
+                 where obj.Id == km.ProductId || obj.BrandId == km.BrandId || km.ApplyForAll == true
+                 select obj;
+    var kmapplyforall = db.Promotions.Where(km => km.ApplyForAll == true).ToList();
+    Boolean checkQuyen(int code)
+    {
+        Boolean check = false;
+        foreach (var abc in result.ToList())
+        {
+            if (abc.Id == code)
+            {
+                check = true;
+            }
+        }
+        return check;
+    }
+}
+<div class="breadcrumb-option">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="breadcrumb__links">
+                    <a href="/home"><i class="fa fa-home"></i> Home</a>
+                    <span>Sản Phẩm</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Breadcrumb End -->
+<!-- Shop Section Begin -->
+<section class="shop spad">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-3 col-md-3">
+                <div class="shop__sidebar">
+                    <div class="sidebar__categories">
+                        <div class="section-title">
+                            <h4>CATEGORIES</h4>
+                        </div>
+                        @Html.Action("MenuLeft", "Menu")
+                    </div>
+                    @*<div class="sidebar__filter">
+            <div class="section-title">
+                <h4>Shop by price</h4>
+            </div>
+            <div class="filter-range-wrap">
+                <div class="price-range ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"
+                     data-min="33" data-max="99"></div>
+                <div class="range-slider">
+                    <div class="price-input">
+                        <p>Price:</p>
+                        <input type="text" id="minamount">
+                        <input type="text" id="maxamount">
+                    </div>
+                </div>
+            </div>
+            <a href="#">Filter</a>
+        </div>*@
+                    @using (Html.BeginForm("Index", "Products", FormMethod.Get))
+                    {
+                        <form class="form-group">
+                            <input name="keyword" value="" placeholder="Tìm kiếm sản phẩm..." type="search" class="searchInput" />
+                            <button type="submit" class="button-search"><span><i class="icon_search" id="nav-name"></i></span></button>
+                        </form>
+                    }
+                    @using (Html.BeginForm("Index", "Products", FormMethod.Get))
+                    {
+                        <form>
+                            <div>
+                                <span>@Html.DropDownList("thuonghieu", null, "Thương hiệu", new { @class = "Filter", @style = "background-color: white; border: 1px solid #b3b3b3; border-radius: 8px; cursor:pointer;", @onchange = "this.form.submit();" })</span>
+                                <span>
+                                    @Html.DropDownList("sortOrder", null, "Sắp xếp theo", new { @style = "background-color: white; border: 1px solid #b3b3b3; border-radius: 8px; cursor:pointer;", @onchange = "this.form.submit();" })
+                                </span>
+                            </div>
+                        </form>
+                    }
+                </div>
+            </div>
+            @if (Model.Count > 0)
+            {
+                <div class="col-lg-9 col-md-9">
+                    <div class="row">
+                        @foreach (var item in Model)
+                        {
+                            var anh = db.ProductImages.Where(s => s.ProductId == item.Id).Select(s => s).ToList();
+                            <div class="col-lg-4 col-md-6">
+                                <div class="product__item">
+                                    @foreach (var obj in anh)
+                                    {
+                                        if (obj.IsDefault == true)
+                                        {
+                                            string ImagePath = "~/wwwroot/ImageProducts/" + obj.ImagePath;
+                                            @*<a href="@Url.Action("ProductDetails","Home", new { id = item.Id})"><img src="@Url.Content(ImagePath)" class="card-img-top" alt="@obj.Caption" title="@obj.Caption"></a>*@
+                                            <div class="product__item__pic set-bg" data-setbg="@Url.Content(ImagePath)">
+                                                @*<div class="label new">New</div>*@
+                                                @if (item.Quantity > 0)
+                                                {
+                                                    <ul class="product__hover">
+                                                        <li><a href="@Url.Content(ImagePath)" class="image-popup"><span class="arrow_expand"></span></a></li>
+                                                        <li><a href="#"><span class="icon_heart_alt"></span></a></li>
+                                                        <li><a href="#" class="cart-btn" data-id="@item.Id"><span class="icon_bag_alt"></span></a></li>
+                                                    </ul>
+                                                }
+                                                else
+                                                {
+                                                    <ul class="product__hover">
+                                                        <h5 style="color:red; text-align:center;font-weight:bold ">HẾT HÀNG</h5>
+                                                    </ul>
+                                                }
+                                            </div>
+                                        }
+
+                                    }
+                                    <div class="product__item__text">
+                                        <h6><a href="/chi-tiet/@item.Id">@item.ProductName</a></h6>
+                                        <div class="rating">
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-star"></i>
+                                        </div>
+                                        @if (checkQuyen(item.Id) == false)
+                                        {
+                                            <div class="product__price">$@item.Price</div>
+                                        }
+                                        @if (kmapplyforall.Count > 0)
+                                        {
+                                            foreach (var km in checkkm)
+                                            {
+                                                decimal? giakm = 0;
+                                                if (km.ApplyForAll == true)
+                                                {
+                                                    if (km.DiscountPercent != null)
+                                                    {
+                                                        giakm = item.Price - (decimal)item.Price * (decimal)km.DiscountPercent / 100;
+                                                        <div class="product__price"><del>$@item.Price</del><sup style="color:red;font-style:italic;text-shadow:4px 4px 8px blue;">(@km.DiscountPercent%)</sup></div>
+                                                        <div class="product__price" style="color:red">@String.Format("{0:C}", giakm)</div>
+                                                    }
+                                                    else if (km.DiscountAmount != null)
+                                                    {
+                                                        giakm = item.Price - (decimal)km.DiscountAmount;
+                                                        <div class="product__price"><del>$@item.Price</del><sup style="color:red;font-style:italic;text-shadow:4px 4px 8px blue;">(- @String.Format("{0:C}", km.DiscountAmount))</sup></div>
+                                                        <div class="product__price" style="color:red">@String.Format("{0:C}", giakm)</div>
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        else
+                                        {
+                                            foreach (var km in checkkm)
+                                            {
+                                                decimal? giakm = 0;
+
+                                                if (km.ProductId == item.Id || km.BrandId == item.BrandId)
+                                                {
+                                                    if (km.DiscountPercent != null)
+                                                    {
+                                                        giakm = item.Price - (decimal)item.Price * (decimal)km.DiscountPercent / 100;
+                                                        <div class="product__price"><del>$@item.Price</del><sup style="color:red;font-style:italic;text-shadow:4px 4px 8px blue;">(@km.DiscountPercent%)</sup></div>
+                                                        <div class="product__price" style="color:red">@String.Format("{0:C}", giakm)</div>
+                                                    }
+                                                    else if (km.DiscountAmount != null)
+                                                    {
+                                                        giakm = item.Price - (decimal)km.DiscountAmount;
+                                                        <div class="product__price"><del>$@item.Price</del><sup style="color:red;font-style:italic;text-shadow:4px 4px 8px blue;">(- @String.Format("{0:C}", km.DiscountAmount))</sup></div>
+                                                        <div class="product__price" style="color:red">@String.Format("{0:C}", giakm)</div>
+                                                    }
+                                                }
+
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        <div class="col-lg-12 text-center">
+                            <div class="pagination__option">
+                                @*<a href="#">1</a>
+                            <a href="#">2</a>
+                            <a href="#">3</a>
+                            <a href="#"><i class="fa fa-angle-right"></i></a>*@
+                                @Html.PagedListPager(Model, page => Url.Action("Index", new { page }), PagedListRenderOptions.Classic)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div style="text-align:center; color:orangered; font-style:italic; font-weight:200;">
+                    <h2>Không tìm thấy sản phẩm phù hợp...!!</h2>
+                </div>
+            }
+
+        </div>
+    </div>
+</section>
+<!-- Shop Section End -->

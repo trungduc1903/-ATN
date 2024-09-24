@@ -1,0 +1,138 @@
+﻿@model IEnumerable<ShopDGHouse.Models.CartItem>
+@using ShopDGHouse.Models
+<table class="table">
+    <tr>
+        <th>STT</th>
+        <th>Ảnh sản phẩm</th>
+        <th>Tên sản phẩm</th>
+        <th>Danh mục</th>
+        <th>Giá</th>
+        <th style="width:100px;">Số lượng</th>
+        <th>Khuyến mại</th>
+        <th>Thành tiền</th>
+        <th style="width:200px;"></th>
+    </tr>
+    @if (Model != null && Model.Any())
+    {
+        DoAn db = new DoAn();
+        var checkkm = from km in db.Promotions where (km.Active == true && km.FromDate <= DateTime.Now && km.ToDate >= DateTime.Now) select km;
+        var result = from obj in Model
+                     from km in checkkm.ToList()
+                     where obj.ProductID == km.ProductId || obj.BrandID == km.BrandId || km.ApplyForAll == true
+                     select obj;
+        var kmapplyforall = db.Promotions.Where(km => km.ApplyForAll == true).ToList();
+        Boolean checkQuyen(int code)
+        {
+            Boolean check = false;
+            foreach (var abc in result.ToList())
+            {
+                if (abc.ProductID == code)
+                {
+                    check = true;
+                }
+            }
+            return check;
+        }
+        decimal? giakm = 0;
+        var i = 0;
+        var tongtien = decimal.Zero;
+        foreach (var item in Model)
+        {
+
+            <tr id="trow_@item.ProductID">
+                <td>@(i+1)</td>
+                <td><img src="@Url.Content(item.Img)" width="60" /></td>
+                <td>@item.ProductName</td>
+                <td>@item.CategoryName</td>
+                <td>@item.Price</td>
+                <td><input type="number" class="form-control" id="Quantity_@item.ProductID" value="@item.Quantity" min="1" max="100" /></td>
+                @if (checkQuyen(item.ProductID) == false)
+                {
+                    giakm = item.Price * item.Quantity;
+                    //@item.TotalPrice = giakm * item.Quantity;
+                    <td></td>
+                    <td>@giakm</td>
+
+                }
+                @if (kmapplyforall.Count > 0)
+                {
+                    foreach (var km in checkkm)
+                    {
+
+                        if (km.ApplyForAll == true)
+                        {
+                            if (km.DiscountPercent != null)
+                            {
+                                giakm = (item.Price - (decimal)(item.Price * (decimal)km.DiscountPercent / 100)) * item.Quantity;
+                                //@item.TotalPrice = giakm * item.Quantity;
+                                <td>@km.ProName</td>
+                                <td>@giakm</td>
+                            }
+                            else if (km.DiscountAmount != null)
+                            {
+                                giakm = (item.Price - (decimal)km.DiscountAmount) * item.Quantity;
+                                //@item.TotalPrice = giakm * item.Quantity;
+                                <td>@km.ProName</td>
+                                <td>@giakm</td>
+                            }
+
+                        }
+                    }
+                }
+                else
+                {
+                    foreach (var km in checkkm)
+                    {
+
+                        if (km.ProductId == item.ProductID || km.BrandId == item.BrandID)
+                        {
+                            if (km.DiscountPercent != null)
+                            {
+                                giakm = (item.Price - (decimal)(item.Price * (decimal)km.DiscountPercent / 100)) * item.Quantity;
+                                //@item.TotalPrice = giakm * item.Quantity;
+                                <td>@km.ProName</td>
+                                <td>@giakm</td>
+
+                            }
+                            else if (km.DiscountAmount != null)
+                            {
+                                giakm = (item.Price - (decimal)km.DiscountAmount) * item.Quantity;
+                                //@item.TotalPrice = giakm * item.Quantity;
+                                <td>@km.ProName</td>
+                                <td>@giakm</td>
+
+                            }
+                        }
+
+                    }
+                }
+
+                <td>
+                    <a href="" data-id="@item.ProductID" class="btn btn-sm btn-danger btnDelete">Xóa</a>
+                    <a href="" data-id="@item.ProductID" class="btn btn-sm btn-success btnUpdate">Cập nhật</a>
+                </td>
+            </tr>
+            tongtien += (decimal)giakm;
+            i++;
+        }
+        <tr>
+            <th colspan="6" class="text-right">Tổng:</th>
+            <th>@tongtien</th>
+            <td></td>
+        </tr>
+        <tr>
+            <th colspan="6" class="text-right"></th>
+            <th></th>
+            <th>
+                <a href="#" class="btn btn-sm btn-danger btnDeleteAll">Xóa</a>
+                <a href="/thanh-toan" class="btn btn-sm btn-success">Thanh toán</a>
+            </th>
+        </tr>
+    }
+    else
+    {
+        <tr>
+            <th colspan="7">Không có sản phẩm nào trong giỏ hàng!!!</th>
+        </tr>
+    }
+</table>

@@ -1,0 +1,119 @@
+﻿@model IEnumerable<ShopDGHouse.Models.Product>
+@using ShopDGHouse.Models;
+@if (Model != null && Model.Any())
+{
+    foreach (var item in Model)
+    {
+        DoAn db = new DoAn();
+        var anh = db.ProductImages.Where(s => s.ProductId == item.Id).Select(s => s).ToList();
+        var checkkm = from km in db.Promotions where (km.Active == true && km.FromDate <= DateTime.Now && km.ToDate >= DateTime.Now) select km;
+        var result = from obj in Model
+                     from km in checkkm.ToList()
+                     where obj.Id == km.ProductId || obj.BrandId == km.BrandId || km.ApplyForAll == true
+                     select obj;
+        var kmapplyforall = db.Promotions.Where(km => km.ApplyForAll == true).ToList();
+        Boolean checkQuyen(int code)
+        {
+            Boolean check = false;
+            foreach (var abc in result.ToList())
+            {
+                if (abc.Id == code)
+                {
+                    check = true;
+                }
+            }
+            return check;
+        }
+        <div class="col-lg-3 col-md-4 col-sm-6 mix @item.Category.CategoryName">
+            <div class="product__item">
+                @foreach (var obj in anh)
+                {
+                    if (obj.IsDefault == true)
+                    {
+                        string ImagePath = "~/wwwroot/ImageProducts/" + obj.ImagePath;
+                        @*<a href="@Url.Action("ProductDetails","Home", new { id = item.Id})"><img src="@Url.Content(ImagePath)" class="card-img-top" alt="@obj.Caption" title="@obj.Caption"></a>*@
+                <div class="product__item__pic set-bg" data-setbg="@Url.Content(ImagePath)">
+                    @*<div class="label new">New</div>*@
+                    @if (item.Quantity > 0)
+                    {
+                        <ul class="product__hover">
+                            <li><a href="@Url.Content(ImagePath)" class="image-popup"><span class="arrow_expand"></span></a></li>
+                            <li><a href="#"><span class="icon_heart_alt"></span></a></li>
+                            <li><a href="#" class="cart-btn" data-id="@item.Id"><span class="icon_bag_alt"></span></a></li>
+                        </ul>
+                    }
+                    else
+                    {
+                        <ul class="product__hover">
+                            <h5 style="color:red; text-align:center;font-weight:bold ">HẾT HÀNG</h5>
+                        </ul>
+                    }
+                </div>
+                    }
+
+                }
+            <div class="product__item__text">
+                <h6><a href="/chi-tiet/@item.Id">@item.ProductName</a></h6>
+                <div class="rating">
+                    <i class="fa fa-star"></i>
+                    <i class="fa fa-star"></i>
+                    <i class="fa fa-star"></i>
+                    <i class="fa fa-star"></i>
+                    <i class="fa fa-star"></i>
+                </div>
+                @if (checkQuyen(item.Id) == false)
+                {
+                    <div class="product__price">$@item.Price</div>
+                }
+                @if (kmapplyforall.Count > 0)
+                {
+                    foreach (var km in checkkm)
+                    {
+                        decimal? giakm = 0;
+                        if (km.ApplyForAll == true)
+                        {
+                            if (km.DiscountPercent != null)
+                            {
+                                giakm = item.Price - (decimal)item.Price * (decimal)km.DiscountPercent / 100;
+                                <div class="product__price"><del>$@item.Price</del><sup style="color:red;font-style:italic;text-shadow:4px 4px 8px blue;">(@km.DiscountPercent%)</sup></div>
+                                <div class="product__price" style="color:red">@String.Format("{0:C}", giakm)</div>
+                            }
+                            else if (km.DiscountAmount != null)
+                            {
+                                giakm = item.Price - (decimal)km.DiscountAmount;
+                                <div class="product__price"><del>$@item.Price</del><sup style="color:red;font-style:italic;text-shadow:4px 4px 8px blue;">(- @String.Format("{0:C}", km.DiscountAmount))</sup></div>
+                                <div class="product__price" style="color:red">@String.Format("{0:C}", giakm)</div>
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    foreach (var km in checkkm)
+                    {
+                        decimal? giakm = 0;
+
+                        if (km.ProductId == item.Id || km.BrandId == item.BrandId)
+                        {
+                            if (km.DiscountPercent != null)
+                            {
+                                giakm = item.Price - (decimal)item.Price * (decimal)km.DiscountPercent / 100;
+                                <div class="product__price"><del>$@item.Price</del><sup style="color:red;font-style:italic;text-shadow:4px 4px 8px blue;">(@km.DiscountPercent%)</sup></div>
+                                <div class="product__price" style="color:red">@String.Format("{0:C}", giakm)</div>
+                            }
+                            else if (km.DiscountAmount != null)
+                            {
+                                giakm = item.Price - (decimal)km.DiscountAmount;
+                                <div class="product__price"><del>$@item.Price</del><sup style="color:red;font-style:italic;text-shadow:4px 4px 8px blue;">(- @String.Format("{0:C}", km.DiscountAmount))</sup></div>
+                                <div class="product__price" style="color:red">@String.Format("{0:C}", giakm)</div>
+                            }
+                        }
+
+                    }
+                }
+            </div>
+            </div>
+        </div>
+    }
+}
+

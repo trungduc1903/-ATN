@@ -1,0 +1,60 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+<section class="categories">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-6 p-0">
+                <div class="categories__item categories__large__item set-bg"
+                     data-setbg="Content/assets/img/categories/category-6.jpg">
+                    <div class="categories__text">
+                        <h1>ALL</h1>
+                        <a href="/products">Shop now</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="row">
+
+                    <div class="col-lg-6 col-md-6 col-sm-6 p-0">
+                        <div class="categories__item set-bg" data-setbg="Content/assets/img/categories/category-8.jpg">
+                            <div class="categories__text">
+                                <h4>MENS</h4>
+                                <a href="/products">Shop now</a>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="col-lg-6 col-md-6 col-sm-6 p-0">
+                        <div class="categories__item set-bg" data-setbg="Content/assets/img/categories/category-7.jpg">
+                            <div class="categories__text">
+                                <h4>WOMENS</h4>
+                                <a href="/products">Shop now</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-6 p-0">
+                        <div class="categories__item set-bg" data-setbg="Content/assets/img/categories/category-4.jpg">
+                            <div class="categories__text">
+                                <h4>UNISEX</h4>
+                                <a href="/products">Shop now</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-6 p-0">
+                        <div class="categories__item set-bg" data-setbg="Content/assets/img/categories/category-10.jpg">
+                            <div class="categories__text">
+                                <h4>PROMOTIONS</h4>
+                                <a href="/products">Shop now</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Categories Section End -->
+<!-- Product Section Begin -->
+@Html.Action("MenuDown", "Menu")

@@ -1,0 +1,74 @@
+﻿
+@{
+    ViewBag.Title = "Thanh toán";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="breadcrumb-option">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="breadcrumb__links">
+                    <a href="/gio-hang"><i class="fa fa-home"></i> Giỏ hàng</a>
+                    <span>Thanh toán</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12 text-center">
+            <h1>Thanh toán</h1>
+            <p>Bạn hãy kiểm tra lại thông tin đơn hàng cho chính xác!!!</p>
+        </div>
+    </div>
+    <hr />
+    @if (ViewBag.ChekCart != null)
+    {
+        <div class="row">
+            <div id="show_success"></div>
+            <div class="col-md-6">
+                @Html.Action("Partial_Checkout", "Cart")
+            </div>
+            <div class="col-md-6">
+                @Html.Action("Partial_Item_Thanhtoan", "Cart")
+            </div>
+        </div>
+    }
+    else
+    {
+        <div>
+            Bạn chưa có sản phẩm nào. Vui lòng quay lại trang<a href="/products"> Sản phẩm</a> để đặt hàng!
+        </div>
+    }
+</div>
+@section scripts{
+    <script>
+        function Onailure(rs) {
+            if (!rs.Success) {
+                $('#show_success').html("Bạn mua hàng thất bại");
+            }
+        }
+        $(document).ready(function () {
+            $('#myForm').validate({
+                rules: {
+                    'CustumerName': {
+                        required: true
+                    },
+                    'Phone': {
+                        required: true
+                    },
+                    'Address': {
+                        required: true
+                    },
+                },
+                messages: {
+                    'CustumerName':'Bạn không được để trống',
+                    'Phone':'Bạn không được để trống',
+                    'Address':'Bạn không được để trống',
+                }
+            });
+        });
+    </script>
+}
+

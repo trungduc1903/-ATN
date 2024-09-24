@@ -1,0 +1,53 @@
+﻿@model ShopDGHouse.Models.User
+@{
+    ViewBag.Title = "Login";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="breadcrumb-option">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="breadcrumb__links">
+                    <a href="/home"><i class="fa fa-home"></i> Home</a>
+                    <span>Đăng nhập</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12 text-center">
+            <h1>Login</h1>
+            <p>Bạn hãy nhập thông tin</p>
+        </div>
+    </div>
+    <hr />
+    <div class="row">
+        <div class="col-md-12">
+            @using (Html.BeginForm("Login", "Account", FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+                <div class="form-group">
+                    <label>Tên đăng nhập</label>
+                    <input type="text" name="Username" required class="form-control" autocomplete="off" />
+                </div>
+                <div class="form-group">
+                    <label>Mật khẩu</label>
+                    <input type="password" name="Password" required class="form-control" autocomplete="off" />
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-block btn-success">Login</button>
+                </div>
+            }
+        </div>
+    </div>
+    @if (ViewBag.error != null)
+    {
+        <br />
+        <div class="alert alert-danger" role="alert" style="color:red">@ViewBag.error</div>
+    }
+</div>
+
+
+

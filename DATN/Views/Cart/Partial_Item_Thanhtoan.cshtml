@@ -1,0 +1,110 @@
+﻿@model IEnumerable<ShopDGHouse.Models.CartItem>
+@using ShopDGHouse.Models
+@if (Model != null && Model.Any())
+{
+    DoAn db = new DoAn();
+    var checkkm = from km in db.Promotions where (km.Active == true && km.FromDate <= DateTime.Now && km.ToDate >= DateTime.Now) select km;
+    var result = from obj in Model
+                 from km in checkkm.ToList()
+                 where obj.ProductID == km.ProductId || obj.BrandID == km.BrandId || km.ApplyForAll == true
+                 select obj;
+    var kmapplyforall = db.Promotions.Where(km => km.ApplyForAll == true).ToList();
+    Boolean checkQuyen(int code)
+    {
+        Boolean check = false;
+        foreach (var abc in result.ToList())
+        {
+            if (abc.ProductID == code)
+            {
+                check = true;
+            }
+        }
+        return check;
+    }
+    <h3>Giỏ hàng  <span style="float:right;">SLSP:@Model.Count()</span></h3>
+    var tongtien = decimal.Zero;
+    decimal? giakm = 0;
+    decimal? tgiakm = 0;
+    <table class="table table-striped">
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.ProductName</td>
+                <td>@item.Quantity</td>
+                @if (checkQuyen(item.ProductID) == false)
+                {
+                    giakm = item.Price * item.Quantity;
+                    tgiakm = item.Price;
+                    //@item.TotalPrice = giakm * item.Quantity;
+                    <td>@tgiakm</td>
+                    <td>@giakm</td>
+
+                }
+                @if (kmapplyforall.Count > 0)
+                {
+                    foreach (var km in checkkm)
+                    {
+
+                        if (km.ApplyForAll == true)
+                        {
+                            if (km.DiscountPercent != null)
+                            {
+                                giakm = (item.Price - (decimal)(item.Price * (decimal)km.DiscountPercent / 100)) * item.Quantity;
+                                tgiakm = (item.Price - (decimal)(item.Price * (decimal)km.DiscountPercent / 100));
+                                //@item.TotalPrice = giakm * item.Quantity;
+                                <td>@tgiakm</td>
+                                <td>@giakm</td>
+                            }
+                            else if (km.DiscountAmount != null)
+                            {
+                                giakm = (item.Price - (decimal)km.DiscountAmount) * item.Quantity;
+                                tgiakm = (item.Price - (decimal)km.DiscountAmount);
+                                //@item.TotalPrice = giakm * item.Quantity;
+                                <td>@tgiakm</td>
+                                <td>@giakm</td>
+                            }
+
+                        }
+                    }
+                }
+                else
+                {
+                    foreach (var km in checkkm)
+                    {
+
+                        if (km.ProductId == item.ProductID || km.BrandId == item.BrandID)
+                        {
+                            if (km.DiscountPercent != null)
+                            {
+                                giakm = (item.Price - (decimal)(item.Price * (decimal)km.DiscountPercent / 100)) * item.Quantity;
+                                tgiakm = (item.Price - (decimal)(item.Price * (decimal)km.DiscountPercent / 100));
+                                //@item.TotalPrice = giakm * item.Quantity;
+                                <td>@tgiakm</td>
+                                <td>@giakm</td>
+
+                            }
+                            else if (km.DiscountAmount != null)
+                            {
+                                giakm = (item.Price - (decimal)km.DiscountAmount) * item.Quantity;
+                                tgiakm = (item.Price - (decimal)km.DiscountAmount);
+                                //@item.TotalPrice = giakm * item.Quantity;
+                                <td>@tgiakm</td>
+                                <td>@giakm</td>
+
+                            }
+                        }
+
+                    }
+                }
+            </tr>
+            tongtien += (decimal)giakm;
+        }
+        <tr>
+            <th></th>
+            <th></th>
+            <th>Tổng tiền</th>
+            <th>@tongtien</th>
+        </tr>
+    </table>
+}
+

@@ -1,0 +1,154 @@
+﻿@model ShopDGHouse.Models.Order
+@{
+    ViewBag.Title = "Add";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+@section naviheader{
+    <ul class="navbar-nav">
+        <li class="nav-item">
+            <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+        </li>
+        <li class="nav-item d-none d-sm-inline-block">
+            <a href="/admin/home" class="nav-link">Home</a>
+        </li>
+        <li class="nav-item d-none d-sm-inline-block">
+            <a href="/admin/orders" class="nav-link">Orders</a>
+        </li>
+        <li class="nav-item d-none d-sm-inline-block">
+            <a href="#" class="nav-link">Thêm mới</a>
+        </li>
+    </ul>
+}
+<section class="content">
+
+    <!-- Default box -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Thêm mới Orders</h3>
+
+            <div class="card-tools">
+
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="bs-stepper-content">
+                <div class="row">
+                    <div class="col-md-4">
+                        @using (Html.BeginForm("Add", "Orders", FormMethod.Post, new { }))
+                        {
+                            @Html.AntiForgeryToken()
+                            @Html.ValidationSummary(true)
+                            <!-- your steps content here -->
+                        <div id="logins-part" class="content active dstepper-block" role="tabpanel" aria-labelledby="logins-part-trigger">
+                            <div class="form-group">
+                                <label for="exampleInputEmail1">Ngày tạo</label>
+                                @Html.TextBoxFor(x => x.OrderDate, "{0:yyyy-MM-dd HH:mm}", new { @class = "form-control", @placeholder = "Ngày tạo", @type = "datetime-local" })
+                                @Html.ValidationMessageFor(x => x.OrderDate, null, new { @class = "text-danger" })
+                            </div>
+                            <div class="form-group">
+                                <label for="exampleInputEmail1">Tên Khách Hàng</label>
+                                @Html.TextBoxFor(x => x.CustomerName, new { @class = "form-control", @placeholder = "Tên khách hàng", @type = "text" })
+                                @Html.ValidationMessageFor(x => x.CustomerName, null, new { @class = "text-danger" })
+                            </div>
+                            <div class="form-group">
+                                <label for="exampleInputEmail1">Email</label>
+                                @Html.TextBoxFor(x => x.Email, new { @class = "form-control", @placeholder = "Email", @type = "email" })
+                                @Html.ValidationMessageFor(x => x.Email, null, new { @class = "text-danger" })
+                            </div>
+                            <div class="form-group">
+                                <label for="exampleInputEmail1">Phone</label>
+                                @Html.TextBoxFor(x => x.Phone, new { @class = "form-control", @placeholder = "Phone", @type = "number" })
+                                @Html.ValidationMessageFor(x => x.Phone, null, new { @class = "text-danger" })
+                            </div>
+                            <div class="form-group">
+                                <label for="exampleInputEmail1">Địa chỉ</label>
+                                @Html.TextBoxFor(x => x.Address, new { @class = "form-control", @placeholder = "Địa chỉ", @type = "text" })
+                                @Html.ValidationMessageFor(x => x.Address, null, new { @class = "text-danger" })
+                            </div>
+
+                            <div class="form-group">
+                                <label for="exampleInputEmail1">Tài khoản</label>
+
+                                    @Html.DropDownList("UserId", null, "Tài khoản", htmlAttributes: new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.UserId, "", new { @class = "text-danger" })
+                            </div>
+                            <div class="form-group">
+                                <label for="exampleInputEmail1">Hình thức thanh toán</label>
+                                    @Html.DropDownList("PaymentId", null, htmlAttributes: new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.PaymentId, "", new { @class = "text-danger" })
+                            </div>
+                            <div class="form-group">
+                                <label for="exampleInputEmail1">Trạng thái</label>
+                                <div class="col-md-10">
+                                    <div class="checkbox">
+                                        @Html.EditorFor(model => model.Status)
+                                        @Html.ValidationMessageFor(model => model.Status, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <a href="/admin/orders" class="btn btn-danger">Quay lại</a>
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                            </div>
+                        </div>
+
+                        }
+                    </div>
+                    <div class="col-md-8">
+                        <h4>Đơn hàng</h4>
+                        <p>---Điền thông tin khách hàng và tạo đơn hàng để thêm sản phẩm cho chi tiết đơn hàng---</p>
+                        <hr />
+                        <table class="table table-bordered" width="100%">
+                            <thead>
+                                <tr>
+                                    <th>STT</th>
+                                    <th>
+                                        Sản phẩm
+                                    </th>
+                                    <th>
+                                        Số lượng
+                                    </th>
+                                    <th>
+                                        Giá
+                                    </th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            </tbody>
+                            <tfoot style="background-color:aquamarine">
+                                <tr>
+                                    <th></th>
+                                    <th>
+                                        <input placeholder="Sản phẩm" readonly />
+                                    </th>
+                                    <th>
+                                        <input placeholder="số lượng" readonly />
+                                    </th>
+                                    <th></th>
+                                    <th><a href="#"><i class="fas fa-plus-circle fa-2x"></i></a></th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+        <!-- /.card-body -->
+        <div class="card-footer">
+
+        </div>
+        <!-- /.card-footer-->
+    </div>
+    <!-- /.card -->
+</section>
+
+
+
